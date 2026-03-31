@@ -77,7 +77,7 @@ export function AppHeader({
 
       <div className="flex items-center gap-3 text-xs text-[var(--gray)]">
         <NavLink href="/" label="Chat" isActive={active === "chat"} />
-        {/* <NavLink
+        <NavLink
           href="/parser"
           label="JSON Parser"
           isActive={active === "parser"}
@@ -92,7 +92,7 @@ export function AppHeader({
           label="UI Renderer"
           isActive={active === "ui-renderer"}
         />
-        <NavLink href="/ast" label="JSON AST" isActive={active === "ast"} /> */}
+        <NavLink href="/ast" label="JSON AST" isActive={active === "ast"} />
 
         {rightSlot ? <span>{rightSlot}</span> : null}
       </div>

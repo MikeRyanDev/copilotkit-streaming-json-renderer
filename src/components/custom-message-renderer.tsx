@@ -1,7 +1,8 @@
 import type { RenderMessageProps } from "@copilotkit/react-ui";
-import { useChatKit } from "./chat/chat-kit";
+import type { AssistantMessage } from "@ag-ui/core";
 import { useJsonParser } from "@hashbrownai/react";
 import { memo } from "react";
+import { useChatKit } from "./chat/chat-kit";
 import { Squircle } from "./squircle";
 
 function normalizeContent(content: unknown) {
@@ -60,25 +61,27 @@ function getToolStatusText(message: RenderMessageProps["message"]): string {
   const payload = toObject(message.content);
   const location = getLocation(payload);
 
-  if (toolName?.toLowerCase().includes("search")) {
-    return "Searching fast-food dataset";
+  if (toolName?.toLowerCase().includes("weather")) {
+    return location ? `Checking weather for ${location}` : "Checking weather";
   }
   if (toolName) {
     return `Running ${humanizeToolName(toolName)}`;
   }
   if (location) {
-    return `Working on ${location}`;
+    return `Checking weather for ${location}`;
   }
   return "Running tool";
 }
 
 const AssistantMessageRenderer = memo(function AssistantMessageRenderer({
-  content,
+  message,
 }: {
-  content: string;
+  message: AssistantMessage;
 }) {
   const kit = useChatKit();
-  const { value } = useJsonParser(content, kit.schema);
+  const { value, parserState } = useJsonParser(message.content ?? "", kit.schema);
+
+  if (parserState.isComplete) console.log(message.content);
 
   if (!value) return null;
 
@@ -93,7 +96,7 @@ const AssistantMessageRenderer = memo(function AssistantMessageRenderer({
 
 export function CustomMessageRenderer({ message }: RenderMessageProps) {
   if (message.role === "assistant") {
-    return <AssistantMessageRenderer content={message?.content ?? ""} />;
+    return <AssistantMessageRenderer message={message} />;
   }
   if (message.role === "tool") {
     return (
